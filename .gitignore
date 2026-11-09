@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Dynamic databases (managed via Hostinger Private Vault FTP)
+data/approved_pitches.json
+data/sent_ledger.json
+data/suppression_list.json
+data/seen_incoming_mids.json
+data/replied_leads.json

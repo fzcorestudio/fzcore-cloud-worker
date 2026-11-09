@@ -1,0 +1,352 @@
+[
+  {
+    "user": "faiz@mail.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "marcus@mail.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "elena@mail.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "adrian@mail.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "julian@mail.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "lucas@team.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "clara@team.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "liam@team.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "maya@team.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "julian@team.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "hannah@get.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "owen@get.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "chloe@get.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "mason@get.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "zoe@get.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "faiz@direct.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "ethan@direct.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "olivia@direct.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "noah@direct.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "ava@direct.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "leo@reach.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "emma@reach.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "nathan@reach.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "mia@reach.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "caleb@reach.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "harrison@hq.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "victoria@hq.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "graham@hq.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "evelyn@hq.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "connor@hq.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "audrey@client.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "elliott@client.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "madeline@client.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "trevor@client.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "claire@client.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "warren@desk.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "charlotte@desk.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "preston@desk.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "natalie@desk.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "simon@desk.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "bennett@partner.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "lydia@partner.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "russell@partner.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "valerie@partner.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "spencer@partner.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "carter@ops.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "brooke@ops.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "garrett@ops.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "fiona@ops.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  },
+  {
+    "user": "dean@ops.fzcorestudio.com",
+    "pass_env": "SUBDOMAIN_MAIL_PASS",
+    "name": "Faiz Majeed",
+    "title": "Founder & Principal",
+    "daily_quota": 20
+  }
+]

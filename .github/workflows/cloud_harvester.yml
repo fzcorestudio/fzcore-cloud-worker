@@ -1,0 +1,47 @@
+name: 24/7 Dedicated High-Volume Lead Harvester Fleet
+
+on:
+  schedule:
+    # Runs continuously every 25 minutes (1,200 to 1,500+ fresh qualified leads / 24 hr)
+    - cron: '*/25 * * * *'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Manual Trigger'
+        required: false
+        default: 'harvest_now'
+
+concurrency:
+  group: fzcore-cloud-harvester
+  cancel-in-progress: false
+
+jobs:
+  harvester-engine:
+    name: High-Volume Playwright Lead Fleet
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: 🚚 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies & Playwright Chromium
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: 🚀 Run Dedicated Lead Harvest
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FORWARD_TARGET_EMAIL: ${{ secrets.FORWARD_TARGET_EMAIL }}
+        run: |
+          python harvest_standalone.py

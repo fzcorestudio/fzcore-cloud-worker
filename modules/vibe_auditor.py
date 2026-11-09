@@ -4,6 +4,7 @@ FZCORE Studio - Vibe Flaw Auditor & Zero-Bounce MX Verifier
 Audits contractor websites against high-impact revenue-recovery opportunities ($150 - $450).
 Extracts Owner/Founder names from About/Team/Contact pages.
 Performs RFC-compliant DNS MX verification via dnspython to guarantee 0% bounce rate.
+Deep-crawls /contact and /about pages to maximize email extraction rate.
 """
 
 import re
@@ -102,8 +103,8 @@ def audit_contractor_site(website_url: str):
         soup = BeautifulSoup(resp.text, "html.parser")
         text = soup.get_text()
 
-        # 1. Look for mailto: links first (high confidence)
         emails_found = []
+        # 1. Homepage mailto:
         for a in soup.find_all("a", href=True):
             href = a["href"].strip()
             if href.startswith("mailto:"):
@@ -111,14 +112,38 @@ def audit_contractor_site(website_url: str):
                 if is_clean_deliverable_email(clean_em):
                     emails_found.append(clean_em)
 
-        # 2. Look for regex emails in body text
+        # 2. Homepage body text regex
         if not emails_found:
             raw_matches = re.findall(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", text)
             for m in raw_matches:
                 if is_clean_deliverable_email(m):
                     emails_found.append(m.lower().strip())
 
-        # Prioritize domain-matched or non-generic emails
+        # 3. Deep Contact / About crawl if homepage had no email
+        if not emails_found:
+            for subpath in ["/contact", "/contact-us", "/contact_us", "/about", "/about-us", "/team"]:
+                try:
+                    c_url = urllib.parse.urljoin(website_url, subpath)
+                    c_resp = requests.get(c_url, headers=HEADERS, timeout=5, verify=False)
+                    if c_resp.status_code == 200:
+                        c_soup = BeautifulSoup(c_resp.text, "html.parser")
+                        for a in c_soup.find_all("a", href=True):
+                            href = a["href"].strip()
+                            if href.startswith("mailto:"):
+                                clean_em = href.replace("mailto:", "").split("?")[0].strip()
+                                if is_clean_deliverable_email(clean_em):
+                                    emails_found.append(clean_em)
+                        if not emails_found:
+                            m_sub = re.findall(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", c_soup.get_text())
+                            for m in m_sub:
+                                if is_clean_deliverable_email(m):
+                                    emails_found.append(m.lower().strip())
+                        if emails_found:
+                            break
+                except Exception:
+                    pass
+
+        # Select best email (domain-matched first)
         best_email = None
         for em in emails_found:
             em_dom = em.split("@")[-1]
@@ -130,7 +155,7 @@ def audit_contractor_site(website_url: str):
 
         res["verified_email"] = best_email
 
-        # 3. Detect Owner/Founder name
+        # Detect Owner/Founder name
         owner_match = re.search(r"(?:owner|founder|president|principal)[:\s]+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)", text, re.IGNORECASE)
         if owner_match:
             candidate = owner_match.group(1).strip()

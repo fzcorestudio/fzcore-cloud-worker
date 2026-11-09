@@ -2,14 +2,9 @@ name: 24/7 Dedicated High-Volume Lead Harvester Fleet
 
 on:
   schedule:
-    # Runs continuously every 25 minutes (1,200 to 1,500+ fresh qualified leads / 24 hr)
-    - cron: '*/25 * * * *'
+    # Runs continuously every 20 minutes (72 cycles/day = 1,500 to 2,000+ leads/24 hr)
+    - cron: '*/20 * * * *'
   workflow_dispatch:
-    inputs:
-      action:
-        description: 'Manual Trigger'
-        required: false
-        default: 'harvest_now'
 
 concurrency:
   group: fzcore-cloud-harvester
@@ -42,6 +37,8 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          SUBDOMAIN_MAIL_PASS: ${{ secrets.SUBDOMAIN_MAIL_PASS }}
+          WARREN_MAIL_PASS: ${{ secrets.WARREN_MAIL_PASS }}
           FORWARD_TARGET_EMAIL: ${{ secrets.FORWARD_TARGET_EMAIL }}
         run: |
           python harvest_standalone.py

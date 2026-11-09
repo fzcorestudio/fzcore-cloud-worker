@@ -2,7 +2,7 @@
 """
 FZCORE Studio - 24/7 Autonomous Cloud Engine Orchestrator
 Master Entrypoint executed by GitHub Actions Cloud Runner on schedule.
-Zero local laptop dependence. Runs 24/7 in cloud.
+Calibrated for 1,000 Emails / 24 Hours with Subdomain Interleaving.
 """
 
 import os
@@ -26,7 +26,7 @@ MAILBOXES_FILE = DATA_DIR / "mailboxes.json"
 def main():
     start_time = time.time()
     print("=" * 75)
-    print("🚀 [FZCORE 24/7 CLOUD WORKER] Starting Autonomous Cycle")
+    print("🚀 [FZCORE 24/7 CLOUD WORKER] Starting Autonomous Cycle (1,000 Emails / Day Target)")
     print(f"⏰ Cloud Runner Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}")
     print("=" * 75)
 
@@ -45,18 +45,18 @@ def main():
     except Exception as e:
         print(f"⚠️ Inbox monitor error: {e}")
 
-    # 3. Safe Outbound Dispatch (Fresh Pitches + Direct-Owner Follow-Ups)
-    print("\n[Step 3/5] Dispatching Safe Outbound Pitches (Human Anti-Spam Pacing)...")
+    # 3. Safe Outbound Dispatch (14 Fresh Pitches + 7 Direct-Owner Follow-Ups = 21 / cycle)
+    print("\n[Step 3/5] Dispatching Safe Outbound Pitches (Subdomain Interleaving & Anti-Spam Pacing)...")
     try:
-        fresh_sent, fu_sent = dispatch_batch(MAILBOXES_FILE, DATA_DIR, max_fresh=4, max_followups=3)
+        fresh_sent, fu_sent = dispatch_batch(MAILBOXES_FILE, DATA_DIR, max_fresh=14, max_followups=7)
         print(f"   -> Results: {fresh_sent} fresh pitches + {fu_sent} follow-ups delivered.")
     except Exception as e:
         print(f"⚠️ Dispatch error: {e}")
 
-    # 4. Continuous Playwright Maps Harvester (Refills Vault Queue)
+    # 4. Continuous Playwright Maps Harvester (15 fresh verified leads / cycle)
     print("\n[Step 4/5] Harvesting Fresh Rank #20-#100 Leads via Headless Playwright...")
     try:
-        harvested_count = harvest_fresh_leads(DATA_DIR, target_count=12)
+        harvested_count = harvest_fresh_leads(DATA_DIR, target_count=15)
         print(f"   -> Results: {harvested_count} fresh qualified leads secured & added to queue.")
     except Exception as e:
         print(f"⚠️ Harvester error: {e}")

@@ -2,8 +2,8 @@ name: 24/7 Autonomous Cloud Outbound & Harvester Engine
 
 on:
   schedule:
-    # Runs continuously every 35 minutes around the clock (unlimited free cloud minutes on public repo)
-    - cron: '*/35 * * * *'
+    # Runs continuously every 30 minutes around the clock (48 cycles/day = ~1,008 emails/24 hr)
+    - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
       action:

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 FZCORE Studio - Safe 24/7 Cloud SMTP Dispatcher & Follow-Up Engine
-Features:
-- Subdomain round-robin load distribution.
-- Humanized anti-spam pacing (45 to 80 seconds randomized jitter).
-- Zero duplicate sends (persistent unified sent ledger).
-- Strict Direct-Owner Follow-Ups (100% skips generic info@/contact@/booksy).
+Optimized for 1,000 Emails / 24 Hours with Subdomain Interleaving:
+- Interleaved Subdomain Round-Robin (never hits the same subdomain twice consecutively).
+- Automatic Subdomain Failover on 451 ratelimit.
+- Direct Named Owners prioritized at the top of the queue.
+- Follow-ups strictly restricted to Direct Named Owners (zero generic inboxes).
+- 45 to 65 seconds randomized human anti-spam pacing.
 """
 
+from collections import defaultdict
 import email
 import json
 import os
@@ -70,7 +72,28 @@ def is_generic_company_email(email_addr: str) -> bool:
     return False
 
 
-def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max_followups: int = 3):
+def build_interleaved_mailbox_pool(mailboxes):
+    """Interleaves mailboxes across different subdomains so no consecutive sends hit the same subdomain."""
+    subdom_map = defaultdict(list)
+    for b in mailboxes:
+        u = b["user"]
+        dom = u.split("@")[-1]
+        subdom_map[dom].append(b)
+
+    interleaved = []
+    max_len = max(len(v) for v in subdom_map.values()) if subdom_map else 0
+    subdom_keys = list(subdom_map.keys())
+    random.shuffle(subdom_keys)
+
+    for i in range(max_len):
+        for k in subdom_keys:
+            if i < len(subdom_map[k]):
+                interleaved.append(subdom_map[k][i])
+
+    return interleaved
+
+
+def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 14, max_followups: int = 7):
     default_pass = os.environ.get("SUBDOMAIN_MAIL_PASS")
     warren_pass = os.environ.get("WARREN_MAIL_PASS") or default_pass
 
@@ -83,7 +106,10 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
         return 0, 0
 
     with open(mailboxes_file, "r", encoding="utf-8") as f:
-        mailboxes = json.load(f)
+        raw_mailboxes = json.load(f)
+
+    # Interleave mailboxes across all 10 subdomains
+    mailbox_pool = build_interleaved_mailbox_pool(raw_mailboxes)
 
     sent_ledger_file = data_dir / "sent_ledger.json"
     sent_ledger = {}
@@ -127,10 +153,15 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
             continue
         pending.append(p)
 
-    print(f"[*] Dispatcher Queue: {len(pending)} uncontacted leads available in active vault.")
+    # Prioritize Direct Named Owners first (Tier A)
+    pending.sort(key=lambda x: (1 if x.get("recipient_name") in ["Owner", "Business Owner", "Founder"] else 0))
+
+    direct_count = sum(1 for p in pending if p.get("recipient_name") not in ["Owner", "Business Owner", "Founder"])
+    print(f"[*] Dispatcher Queue: {len(pending)} uncontacted leads available ({direct_count} Direct Named Owners prioritized first).")
 
     fresh_sent = 0
-    box_idx = random.randint(0, len(mailboxes) - 1)
+    pool_idx = random.randint(0, len(mailbox_pool) - 1)
+    cooling_subdomains = set()
 
     ctx = ssl.create_default_context()
 
@@ -149,11 +180,23 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
         if not recipient_email or not body_text:
             continue
 
-        box = mailboxes[box_idx % len(mailboxes)]
-        box_idx += 1
-        sender_email = box["user"]
-        sender_name = box.get("name", "Faiz Majeed")
-        sender_title = box.get("title", "Founder & Principal")
+        # Find next available mailbox from a non-cooling subdomain
+        chosen_box = None
+        for _ in range(len(mailbox_pool)):
+            candidate_box = mailbox_pool[pool_idx % len(mailbox_pool)]
+            pool_idx += 1
+            cand_subdom = candidate_box["user"].split("@")[-1]
+            if cand_subdom not in cooling_subdomains:
+                chosen_box = candidate_box
+                break
+
+        if not chosen_box:
+            print("[!] All active subdomains are currently cooling down. Pausing batch.")
+            break
+
+        sender_email = chosen_box["user"]
+        sender_name = chosen_box.get("name", "Faiz Majeed")
+        sender_title = chosen_box.get("title", "Founder & Principal")
         box_pass = warren_pass if sender_email == "warren@desk.fzcorestudio.com" else default_pass
         subdomain = sender_email.split("@")[-1]
 
@@ -172,11 +215,29 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
         msg.attach(MIMEText(body_text, "plain", "utf-8"))
         msg.attach(MIMEText(body_html, "html", "utf-8"))
 
-        try:
-            with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=ctx, timeout=15) as server:
-                server.login(sender_email, box_pass)
-                server.sendmail(sender_email, [recipient_email], msg.as_string())
+        delivery_ok = False
+        for attempt in range(1, 3):
+            try:
+                with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=ctx, timeout=15) as server:
+                    server.login(sender_email, box_pass)
+                    server.sendmail(sender_email, [recipient_email], msg.as_string())
+                delivery_ok = True
+                break
+            except Exception as send_err:
+                err_str = str(send_err)
+                if "451" in err_str and "hostinger_out_ratelimit" in err_str:
+                    cooling_subdomains.add(subdomain)
+                    print(f"   ⚠️ Subdomain {subdomain} hit temporary hourly ratelimit. Cooling down for this cycle.")
+                    break
+                elif any(code in err_str for code in ["550", "551", "552", "553", "554", "User unknown"]):
+                    suppressed.add(recipient_email)
+                    print(f"   🚨 Auto-quarantined dead recipient: {recipient_email}")
+                    break
+                else:
+                    if attempt < 2:
+                        time.sleep(3)
 
+        if delivery_ok:
             sent_ledger[lead_id] = {
                 "sent_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "recipient": recipient_email,
@@ -188,19 +249,12 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
             }
             sent_emails.add(recipient_email)
             fresh_sent += 1
-            print(f"   ✅ [PITCH DELIVERED] To: {recipient_name} <{recipient_email}> ({business_name}) via {sender_email}")
+            print(f"   ✅ [PITCH {fresh_sent}/{max_fresh}] To: {recipient_name} <{recipient_email}> ({business_name}) via {sender_email}")
 
             if fresh_sent < max_fresh:
-                sleep_sec = random.uniform(50, 75)
-                print(f"   ⏳ Pacing cooldown: {int(sleep_sec)}s before next send...")
+                sleep_sec = random.uniform(45, 65)
+                print(f"   ⏳ Anti-Spam Pacing: Cooling down for {int(sleep_sec)}s before next send...")
                 time.sleep(sleep_sec)
-
-        except Exception as send_err:
-            print(f"   ❌ Delivery Failed to {recipient_email}: {send_err}")
-            if any(code in str(send_err) for code in ["550", "551", "552", "553", "554", "User unknown"]):
-                suppressed.add(recipient_email)
-                print(f"   🚨 Auto-quarantined dead recipient: {recipient_email}")
-            time.sleep(10)
 
     # 2. Due Follow-Up #1 Bumps (Direct Named Owners Only)
     fu_sent = 0
@@ -234,6 +288,10 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
         biz_name = rec.get("business", "your business")
         orig_mid = rec.get("message_id", "")
         box_pass = warren_pass if sender_box == "warren@desk.fzcorestudio.com" else default_pass
+        fu_subdom = sender_box.split("@")[-1]
+
+        if fu_subdom in cooling_subdomains:
+            continue
 
         fu_subject = f"Re: {orig_subject}" if not orig_subject.lower().startswith("re:") else orig_subject
 
@@ -270,16 +328,20 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 4, max
             rec["followup_sent"] = True
             rec["followup_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             fu_sent += 1
-            print(f"   📬 [FOLLOW-UP #1 DELIVERED] To: {target_email} ({biz_name}) via {sender_box}")
+            print(f"   📬 [FOLLOW-UP {fu_sent}/{max_followups}] To: {target_email} ({biz_name}) via {sender_box}")
 
             if fu_sent < max_followups:
-                sleep_sec = random.uniform(50, 75)
-                print(f"   ⏳ Follow-up pacing cooldown: {int(sleep_sec)}s...")
+                sleep_sec = random.uniform(45, 65)
+                print(f"   ⏳ Follow-up pacing: Cooling down for {int(sleep_sec)}s...")
                 time.sleep(sleep_sec)
 
         except Exception as fu_err:
-            print(f"   ❌ Follow-up failed to {target_email}: {fu_err}")
-            time.sleep(10)
+            err_fu = str(fu_err)
+            if "451" in err_fu and "hostinger_out_ratelimit" in err_fu:
+                cooling_subdomains.add(fu_subdom)
+            elif any(code in err_fu for code in ["550", "551", "552", "553", "554", "User unknown"]):
+                suppressed.add(target_email)
+            print(f"   ❌ Follow-up note on {target_email}: {fu_err}")
 
     # Save state
     with open(sent_ledger_file, "w", encoding="utf-8") as lf:

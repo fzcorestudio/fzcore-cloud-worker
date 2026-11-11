@@ -7,6 +7,7 @@ Deep DOM flaw audit + Contact-page crawling + RFC DNS MX verification.
 Generates senior-designer, flaw-calibrated pitches ready for dispatch.
 """
 
+import hashlib
 import json
 import os
 import random
@@ -125,9 +126,8 @@ def generate_pitch(lead):
     # Clean city display
     display_city = city.split(",")[0].strip() if "," in city else city
 
-    # Hash deterministically for balanced rotation across 4 concrete contractor angles
-    h = abs(hash(email or biz))
-    angle_idx = h % 4
+    # MD5 hash deterministically for uniform, balanced rotation across all 12 concrete contractor angles
+    angle_idx = int(hashlib.md5((email or biz).lower().encode("utf-8")).hexdigest(), 16) % 12
 
     if owner:
         greeting = f"Hi {owner},"
@@ -150,20 +150,72 @@ def generate_pitch(lead):
             f"FZCORE Studio | fzcorestudio.com"
         )
     elif angle_idx == 1:
-        # Angle 1: Dead Quotes & Dormant Estimates (Jobber Database Reactivation)
-        subject = f"past quotes for {biz}" if is_direct else f"quick question re past quotes - {biz}"
+        # Angle 1: Speed-to-Lead Drop (HBR 21x Multiplier Data)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"inbound estimate response - {biz}"
         body = (
             f"{greeting}\n\n"
-            f"Hope the week is going well for the crew at {biz}.\n\n"
-            f"Most established {cat.lower()} companies sit on 200 to 500+ past estimates from homeowners who ghosted or postponed over the last year.\n\n"
-            f"We run a simple 2-text reactivation protocol that usually re-opens 3 to 8 of those dormant jobs ($15k to $40k+ in work) with zero ad spend.\n\n"
-            f"Mind if I send over the exact 2-text sequence so you can see how it works?\n\n"
+            f"Came across {biz} while looking at {cat.lower()} work in {display_city}.\n\n"
+            f"Harvard Business Review data shows 78% of homeowners hire whichever contractor responds to their inquiry first. When a website quote request sits in an email inbox for an hour while crew is working, that job almost always goes to a competitor.\n\n"
+            f"We set up an instant 20-second text alert directly to your phone with a 1-tap call button so you can reach new leads before they call the next contractor.\n\n"
+            f"Mind if I send over a quick preview link of how it alerts your phone?\n\n"
             f"Best,\n"
             f"Faiz Majeed\n"
             f"FZCORE Studio | fzcorestudio.com"
         )
     elif angle_idx == 2:
-        # Angle 2: Tire-Kicker / Ghosted Bid 30s Filter (Unpaid Driving Bleed)
+        # Angle 2: Exclusive Local Capacity (Anti-Angi / Dylan Capacity Model)
+        subject = f"exclusive capacity in {display_city} - {biz}" if is_direct else f"project capacity in {display_city} - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Came across {biz} while reviewing {cat.lower()} contractors around {display_city}.\n\n"
+            f"We work with homeowners who need {cat.lower()} work done, but unlike Angi or Thumbtack, we never share leads with four other guys or start a bidding war.\n\n"
+            f"Wanted to check if you and your crews currently have room to take on 2 to 3 exclusive projects this month?\n\n"
+            f"If you have capacity, let me know and I can send over the details.\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 3:
+        # Angle 3: Unbilled Change Orders & Scope Creep (AGC Profit Fade Data)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"job site change orders - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Came across {biz} while looking at {cat.lower()} projects in {display_city}.\n\n"
+            f"Construction association data shows 40% to 60% of contractor profit loss happens when homeowners verbally ask for small extras on site that never get written down or get disputed on the final invoice.\n\n"
+            f"We built a 1-tap mobile change order app where homeowners finger-sign extra scope approvals on your phone in 30 seconds before extra work begins.\n\n"
+            f"Mind if I send over a 15-second preview of how it works on mobile?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 4:
+        # Angle 4: Retainage & Final Payment DSO Squeeze (Levelset 50+ Day DSO Fix)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"final payment collection - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Hope the week is going well for the crew at {biz}.\n\n"
+            f"Levelset reports only 12% of construction companies get paid on time, often waiting 50+ days for final retainage while paying suppliers and crew out of pocket.\n\n"
+            f"We provide a 1-page substantial completion walkthrough protocol that legally secures 95% of the contract balance on site upon final walkthrough.\n\n"
+            f"Mind if I send over the 1-page walkthrough checklist template?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 5:
+        # Angle 5: Google Review Friction Gap (BrightLocal 86% Review Data)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"Google review capture - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Came across {biz} while checking out {cat.lower()} contractors in {display_city}.\n\n"
+            f"86% of high-ticket homeowners check Google reviews before hiring, but asking clients in person only converts at 5% because homeowners get busy and forget once you leave.\n\n"
+            f"We set up an automated 1-tap review link sent 45 minutes after final sign-off that pops open the 5-star review box directly on their smartphone.\n\n"
+            f"Mind if I send over a quick preview of how it routes directly to your Google profile?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 6:
+        # Angle 6: Tire-Kicker / Ghosted Bid 30s Filter (Unpaid Driving Bleed)
         subject = f"quick question for {owner} re {biz}" if is_direct else f"unqualified bids - {biz}"
         body = (
             f"{greeting}\n\n"
@@ -175,15 +227,67 @@ def generate_pitch(lead):
             f"Faiz Majeed\n"
             f"FZCORE Studio | fzcorestudio.com"
         )
-    else:
-        # Angle 3: Exclusive Local Project Capacity (Anti-Angi / Dylan Capacity Model)
-        subject = f"exclusive capacity in {display_city} - {biz}" if is_direct else f"project capacity in {display_city} - {biz}"
+    elif angle_idx == 7:
+        # Angle 7: Dead Quotes & Dormant Estimates (Jobber Database Reactivation)
+        subject = f"past quotes for {biz}" if is_direct else f"quick question re past quotes - {biz}"
         body = (
             f"{greeting}\n\n"
-            f"Came across {biz} while reviewing {cat.lower()} contractors around {display_city}.\n\n"
-            f"We work with homeowners who need {cat.lower()} work done, but unlike Angi or Thumbtack, we never share leads with four other guys or start a bidding war.\n\n"
-            f"Wanted to check if you and your crews currently have room to take on 2 to 3 exclusive projects this month?\n\n"
-            f"If you have capacity, let me know and I can send over the details.\n\n"
+            f"Hope the week is going well for the crew at {biz}.\n\n"
+            f"Most established {cat.lower()} companies sit on 200 to 500+ past estimates from homeowners who ghosted or postponed over the last year.\n\n"
+            f"We run a simple 2-text reactivation protocol that usually re-opens 3 to 8 of those dormant jobs ($15k to $40k+ in work) with zero ad spend.\n\n"
+            f"Mind if I send over the exact 2-text sequence so you can see how it works?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 8:
+        # Angle 8: Material Price Volatility & Escalation (NAHB Price Jump Data)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"material price protection - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Hope the projects are moving along well for {biz}.\n\n"
+            f"With supplier materials jumping 10% to 15% without warning, when homeowners sit on a proposal for 60 days, contractors end up eating the material price increase out of pocket.\n\n"
+            f"We embed a clean 14-day price lock clause with an automated Day-10 reminder that creates natural urgency for homeowners to sign before supplier rate jumps.\n\n"
+            f"Mind if I send over the 14-day price lock clause we use?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 9:
+        # Angle 9: Neighbor Radius Inefficiency (Staged Equipment Advantage)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"neighbor projects in {display_city} - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Came across {biz} while checking out {cat.lower()} work in {display_city}.\n\n"
+            f"The most profitable jobs for any contractor are the ones right next door to where your trailers and equipment are already parked. Zero extra drive time and half the overhead.\n\n"
+            f"When you start a project, our 1-click radius engine notifies the 25 adjacent homeowners that your crew is on their street and offers a quick evaluation while equipment is staged.\n\n"
+            f"Mind if I send over a quick preview of how the neighbor radius alert looks?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    elif angle_idx == 10:
+        # Angle 10: Winter Slowdown & Seasonal Booking (NRCA Winter Revenue Drop)
+        subject = f"winter schedule for {biz}" if is_direct else f"quick question re winter schedule - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Came across {biz} while looking at {cat.lower()} companies in {display_city}.\n\n"
+            f"Seasonal slowdowns often drop trade revenue by 40% to 50%, forcing contractors to lay off good crew members who get hired away by competitors before spring.\n\n"
+            f"We run an early-bird spring pre-season reservation drive in late autumn and winter that secures homeowner deposits and locks in spring cash flow months early.\n\n"
+            f"Mind if I send over the pre-season campaign sequence?\n\n"
+            f"Best,\n"
+            f"Faiz Majeed\n"
+            f"FZCORE Studio | fzcorestudio.com"
+        )
+    else:
+        # Angle 11: Subcontractor No-Show Cascades (FMI Scheduling Delay Data)
+        subject = f"quick question for {owner} re {biz}" if is_direct else f"sub schedule pings - {biz}"
+        body = (
+            f"{greeting}\n\n"
+            f"Came across {biz} while looking at {cat.lower()} projects in {display_city}.\n\n"
+            f"A single subcontractor no-show delays the entire job site by a week and triggers frustrating homeowner complaints.\n\n"
+            f"We set up an automated 48-hour and 24-hour SMS accountability bridge where subs must tap '1' to confirm their arrival time, giving you an early warning before materials hit the driveway.\n\n"
+            f"Mind if I send over a quick 15-second preview of how the sub confirmation bridge works?\n\n"
             f"Best,\n"
             f"Faiz Majeed\n"
             f"FZCORE Studio | fzcorestudio.com"

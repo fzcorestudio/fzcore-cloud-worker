@@ -314,17 +314,26 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 14, ma
 
         fu_subject = f"Re: {orig_subject}" if not orig_subject.lower().startswith("re:") else orig_subject
 
+        recipient_name = rec.get("recipient_name") or rec.get("name")
+        clean_name = None
+        if recipient_name and recipient_name not in ["Owner", "Business Owner", "Founder", "Team", "Admin", "Office"]:
+            first_candidate = recipient_name.split()[0].capitalize()
+            if not any(bad in first_candidate.lower() for bad in ["info", "contact", "sales", "support", "help", "@", "bwalker", "admin"]):
+                if len(first_candidate) >= 2 and len(first_candidate) <= 15:
+                    clean_name = first_candidate
+
+        greeting = f"Hi {clean_name}," if clean_name else "Hi there,"
+
         bump_plain = (
-            f"Hey there,\n\n"
-            f"Quick bump on this in case you were on a job when it came in.\n\n"
-            f"Put together that quick 20-second preview of how the instant mobile package selector would look for {biz_name}.\n\n"
-            f"Mind if I send the preview link over?\n\n"
+            f"{greeting}\n\n"
+            f"Quick follow up on this in case you were out on a job site or running between bids.\n\n"
+            f"Happy to send over that quick 15-second preview if you would like to take a look, or no worries at all if your schedule is completely packed right now.\n\n"
             f"Best,\n"
             f"{sender_name}\n"
             f"FZCORE Studio | fzcorestudio.com\n"
         )
         sig_html = f"""<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: #18181b; padding-top: 14px; margin-top: 14px; border-top: 1px solid #e5e7eb;"><strong>{sender_name}</strong><br><span style="color: #6b7280; font-size: 12px;">Founder · FZCORE Studio</span><br><a href="https://fzcorestudio.com" style="color: #111827; text-decoration: none; font-weight: 600;">fzcorestudio.com</a></div>"""
-        bump_html = f"""<!DOCTYPE html><html><body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 14px; color: #111827;"><p>Hey there,</p><p>Quick bump on this in case you were on a job when it came in.</p><p>Put together that quick 20-second preview of how the instant mobile package selector would look for <strong>{biz_name}</strong>.</p><p>Mind if I send the preview link over?</p><p>Best,</p>{sig_html}</body></html>"""
+        bump_html = f"""<!DOCTYPE html><html><body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 14px; color: #111827;"><p>{greeting}</p><p>Quick follow up on this in case you were out on a job site or running between bids.</p><p>Happy to send over that quick 15-second preview if you would like to take a look, or no worries at all if your schedule is completely packed right now.</p><p>Best,</p>{sig_html}</body></html>"""
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = fu_subject

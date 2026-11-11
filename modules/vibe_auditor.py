@@ -80,8 +80,6 @@ def audit_contractor_site(website_url: str):
         "mx_provider": None,
         "verified_email": None,
         "owner_name": "Business Owner",
-        "primary_flaw": "Missing Instant 60-Second Mobile Quote Estimator",
-        "price": "$180 - $280"
     }
 
     if not website_url or not website_url.startswith("http"):

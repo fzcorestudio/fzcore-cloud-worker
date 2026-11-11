@@ -21,7 +21,7 @@ from playwright.sync_api import sync_playwright
 from modules.vibe_auditor import audit_contractor_site, is_clean_deliverable_email
 
 HIGH_TICKET_QUERIES = [
-    # Trades & Remodeling (Niche 1)
+    # Trades & High-Value Remodeling (Niche 1)
     ("Roofing Contractor", "Atlanta GA"),
     ("Kitchen and Bath Remodeling", "Dallas TX"),
     ("Custom Home Builder", "Houston TX"),
@@ -38,29 +38,53 @@ HIGH_TICKET_QUERIES = [
     ("General Contractor Commercial", "Indianapolis IN"),
     ("Plumbing and Drain Specialist", "Columbus OH"),
     ("Tree Removal and Arborist", "Raleigh NC"),
+    ("Siding and Window Replacement", "Kansas City MO"),
+    ("Concrete and Stamped Paving", "Las Vegas NV"),
+    ("Residential Roofing Services", "Fort Worth TX"),
+    ("Solar Panel Installation", "San Diego CA"),
+    ("Landscape Design and Architecture", "Scottsdale AZ"),
+    ("Kitchen Renovation Specialist", "Minneapolis MN"),
+    ("Commercial Painting Contractor", "Atlanta GA"),
+    ("Electrical Contractor Commercial", "Austin TX"),
+    ("Deck and Patio Builder", "Portland OR"),
+    ("Spray Foam Insulation Contractor", "Dallas TX"),
+    ("Custom Cabinetry and Woodworking", "Nashville TN"),
+    ("Driveway Paving and Asphalt", "Richmond VA"),
+    ("Waterproofing and Basement Sealing", "Pittsburgh PA"),
+    ("Structural Framing Contractor", "Phoenix AZ"),
 
-    # Medical & Wellness / Aesthetics (Niche 2)
+    # Medical & Wellness / High-Ticket Aesthetics (Niche 2)
     ("Chiropractor Sports Medicine", "Fort Lauderdale FL"),
     ("Cosmetic Dentistry Veneers", "San Diego CA"),
     ("MedSpa Aesthetics Clinic", "Boca Raton FL"),
     ("Dental Implants Specialist", "Austin TX"),
     ("Plastic Surgery Center", "Scottsdale AZ"),
     ("Dermatology and Skin Clinic", "Tampa FL"),
+    ("Orthodontist Invisalign Specialist", "Dallas TX"),
+    ("Physical Therapy Clinic", "Charlotte NC"),
+    ("Family Wellness Chiropractic", "Orlando FL"),
+    ("Aesthetic Laser Center", "Houston TX"),
 
-    # Luxury Automotive & Detailing (Niche 3)
+    # Luxury Automotive, Marine & Specialty Trades (Niche 3)
     ("Auto Detailing Ceramic Coating", "Miami FL"),
     ("Paint Protection Film PPF", "Scottsdale AZ"),
     ("Window Tinting Commercial and Auto", "Las Vegas NV"),
     ("Mobile Car Wash and Detailing", "Dallas TX"),
     ("Marine Boat Detailing", "Fort Lauderdale FL"),
+    ("Custom Auto Upholstery", "Phoenix AZ"),
+    ("Fleet Maintenance and Repair", "Atlanta GA"),
 
-    # Commonwealth (UK / Canada / Australia)
+    # Top Commonwealth Metros (UK / Canada / Australia)
     ("Roofing Contractor", "Calgary AB"),
     ("Kitchen Renovation", "Toronto ON"),
     ("Custom Home Builder", "Vancouver BC"),
     ("Commercial Cleaning Services", "Melbourne AU"),
     ("Painting Contractor", "Sydney AU"),
     ("Roofing and Gutter Contractor", "Manchester UK"),
+    ("Electrical Services Commercial", "Brisbane AU"),
+    ("Landscaping Contractor", "Perth AU"),
+    ("Plumbing and Heating Engineer", "Birmingham UK"),
+    ("Bathroom Installation Specialist", "Leeds UK")
 ]
 
 
@@ -109,11 +133,11 @@ def generate_pitch(lead):
 
 
 def harvest_fresh_leads(data_dir: Path, target_count: int = 35):
-    # Select 3 to 4 distinct queries to ensure multi-niche & multi-city breadth
-    num_queries = 3
-    selected_queries = random.sample(HIGH_TICKET_QUERIES, min(num_queries, len(HIGH_TICKET_QUERIES)))
+    # Dynamic Multi-Query Lead Hunting: iterates continuously through query pool until target is met
+    query_pool = list(HIGH_TICKET_QUERIES)
+    random.shuffle(query_pool)
 
-    print(f"\n🚀 [HIGH-VOLUME HARVESTER] Starting Multi-Niche Harvest (Target: {target_count} qualified leads across {len(selected_queries)} cities)...")
+    print(f"\n🚀 [HIGH-VOLUME HARVESTER] Starting Dynamic Multi-Niche Harvest (Target: {target_count} qualified leads)...")
 
     pitches_file = data_dir / "approved_pitches.json"
     sent_ledger_file = data_dir / "sent_ledger.json"
@@ -152,6 +176,8 @@ def harvest_fresh_leads(data_dir: Path, target_count: int = 35):
     seen_domains = {p.get("domain", "").strip().lower() for p in existing_pitches}
 
     new_qualified = []
+    harvest_start = time.time()
+    max_harvest_secs = 1080  # 18 minutes safe execution ceiling
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
@@ -161,25 +187,42 @@ def harvest_fresh_leads(data_dir: Path, target_count: int = 35):
         )
         page = context.new_page()
 
-        for niche, location in selected_queries:
+        for niche, location in query_pool:
             if len(new_qualified) >= target_count:
+                print(f"🎯 Reached target count of {target_count} verified leads! Ending crawl early.")
+                break
+
+            if (time.time() - harvest_start) > max_harvest_secs:
+                print(f"⏰ Harvester time limit reached ({int(time.time() - harvest_start)}s). Wrapping up batch.")
                 break
 
             search_query = f"{niche} in {location}"
-            print(f"\n[*] Hunting Google Maps: '{search_query}'...")
+            print(f"\n[*] Hunting Google Maps: '{search_query}' (Progress: {len(new_qualified)}/{target_count})...")
 
             try:
                 url = f"https://www.google.com/maps/search/{urllib.parse.quote(search_query)}"
                 page.goto(url, wait_until="domcontentloaded", timeout=30000)
                 page.wait_for_timeout(2500)
 
-                # Deep 12x scroll to load 60-80 listings
+                # Progressive deep scroll with responsive card checks
                 feed_selector = 'div[role="feed"]'
                 try:
                     page.wait_for_selector(feed_selector, timeout=8000)
-                    for _ in range(12):
-                        page.evaluate(f'document.querySelector("{feed_selector}").scrollBy(0, 1800);')
-                        page.wait_for_timeout(800)
+                    last_card_count = 0
+                    stagnant_count = 0
+                    for _ in range(15):
+                        page.evaluate(f'document.querySelector("{feed_selector}").scrollBy(0, 2400);')
+                        page.wait_for_timeout(1200)
+                        curr_cnt = len(page.query_selector_all('div[role="feed"] > div > div[role="article"], div[role="feed"] a[href*="/maps/place/"]'))
+                        if curr_cnt >= 50:
+                            break
+                        if curr_cnt == last_card_count:
+                            stagnant_count += 1
+                            if stagnant_count >= 3:
+                                break
+                        else:
+                            stagnant_count = 0
+                            last_card_count = curr_cnt
                 except Exception:
                     pass
 

@@ -45,18 +45,18 @@ def main():
     except Exception as e:
         print(f"⚠️ Inbox monitor error: {e}")
 
-    # 3. Safe Outbound Dispatch (14 Fresh Pitches + 7 Direct-Owner Follow-Ups = 21 / cycle)
-    print("\n[Step 3/5] Dispatching Safe Outbound Pitches (Subdomain Interleaving & Anti-Spam Pacing)...")
+    # 3. Safe Outbound Dispatch (18 Fresh Pitches + 7 Direct-Owner Follow-Ups = 25 / cycle -> 1,200 / 24 hr)
+    print("\n[Step 3/5] Dispatching Safe Outbound Pitches (18 Fresh + 7 Follow-Ups = 25 / cycle | 1,200 / 24 hr)...")
     try:
-        fresh_sent, fu_sent = dispatch_batch(MAILBOXES_FILE, DATA_DIR, max_fresh=14, max_followups=7)
+        fresh_sent, fu_sent = dispatch_batch(MAILBOXES_FILE, DATA_DIR, max_fresh=18, max_followups=7)
         print(f"   -> Results: {fresh_sent} fresh pitches + {fu_sent} follow-ups delivered.")
     except Exception as e:
         print(f"⚠️ Dispatch error: {e}")
 
-    # 4. Continuous Playwright Maps Harvester (15 fresh verified leads / cycle)
-    print("\n[Step 4/5] Harvesting Fresh Rank #20-#100 Leads via Headless Playwright...")
+    # 4. Continuous Playwright Maps Harvester (20 fresh verified leads / cycle)
+    print("\n[Step 4/5] Harvesting Fresh Rank #20-#100 Leads via Headless Playwright (Target: 20)...")
     try:
-        harvested_count = harvest_fresh_leads(DATA_DIR, target_count=15)
+        harvested_count = harvest_fresh_leads(DATA_DIR, target_count=20)
         print(f"   -> Results: {harvested_count} fresh qualified leads secured & added to queue.")
     except Exception as e:
         print(f"⚠️ Harvester error: {e}")

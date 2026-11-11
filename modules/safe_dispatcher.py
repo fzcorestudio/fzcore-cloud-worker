@@ -277,21 +277,40 @@ def dispatch_batch(mailboxes_file: Path, data_dir: Path, max_fresh: int = 14, ma
         sent_time_str = rec.get("sent_at", "")
         try:
             sent_dt = datetime.strptime(sent_time_str, "%Y-%m-%d %H:%M:%S")
-            if (now - sent_dt) < timedelta(days=3):
+            days_passed = (now - sent_dt).total_seconds() / 86400.0
+            # Strict window: only follow up between 3 and 7 days after initial send
+            if days_passed < 3.0 or days_passed > 7.0:
                 continue
         except Exception:
             continue
 
-        sender_box = rec.get("sender", "")
-        sender_name = rec.get("sender_name", "Faiz Majeed")
+        orig_sender_box = rec.get("sender", "")
         orig_subject = rec.get("subject", "quick question")
         biz_name = rec.get("business", "your business")
         orig_mid = rec.get("message_id", "")
+        orig_subdom = orig_sender_box.split("@")[-1] if "@" in orig_sender_box else ""
+
+        # Choose an active healthy mailbox from our 50-mailbox fleet (prevents 535 auth errors on old senders)
+        chosen_fu_box = None
+        for mb in mailbox_pool:
+            mb_sub = mb["user"].split("@")[-1]
+            if mb_sub not in cooling_subdomains:
+                if orig_subdom and mb_sub == orig_subdom:
+                    chosen_fu_box = mb
+                    break
+        if not chosen_fu_box:
+            for mb in mailbox_pool:
+                if mb["user"].split("@")[-1] not in cooling_subdomains:
+                    chosen_fu_box = mb
+                    break
+
+        if not chosen_fu_box:
+            continue
+
+        sender_box = chosen_fu_box["user"]
+        sender_name = chosen_fu_box.get("name", "Faiz Majeed")
         box_pass = warren_pass if sender_box == "warren@desk.fzcorestudio.com" else default_pass
         fu_subdom = sender_box.split("@")[-1]
-
-        if fu_subdom in cooling_subdomains:
-            continue
 
         fu_subject = f"Re: {orig_subject}" if not orig_subject.lower().startswith("re:") else orig_subject
 
